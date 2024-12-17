@@ -1,117 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouncing Images</title>
+    <style>
+        body {
+            background-repeat: repeat;
+            background-size: 80%;
+            background-image: url('https://wallpapercave.com/wp/wp14803412.webp');
+        }
+        h1 {
+            color: red;
+            text-align: center;
+        }
+        .button {
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body id="myBody">
+    <h6> Version 0.1.1-5</h6>
+    <h1>T4A09 Bounce by Fred</h1>
 
+    <input type="button" id="moveRightButton" class="button" value="Auto Right">
+    <input type="button" id="moveDownButton" class="button" value="Auto Down">
+    <input type="button" class="button" value="Auto Background Left" onclick="moveBackgroundLeft()">
 
-<body id="myBody"  style="background-repeat:repeat; background-size: 80%" background="myBackground01.jpg">
+    <img id="myImg01" src="myImgNew.jpg" title="myImg01" style="position:absolute; width:100px; height:80px; left: 50px; top:190px;">
+    <img id="myImg02" src="myImgNew.jpg" title="myImg02" style="position:absolute; width:100px; height:80px; left:350px; top:390px;">
 
-  <h6> Version 0.1.1-5</h6>
-<h1 align=center><font color=red>T4A09 Bounce by Fred</font></h1>
+    <script>
+        // Global variables
+        let myGlobalX = 0;
+        let myHorizontalSpeed = 10;
+        let myVerticalSpeed = 6;
+        let isMovingRight = false;
+        let isMovingDown = false;
 
+        // Function to detect collisions
+        function myHitOther(my1, my2) {
+            const rect1 = document.getElementById(my1).getBoundingClientRect();
+            const rect2 = document.getElementById(my2).getBoundingClientRect();
 
-<script>
+            return !(rect1.right < rect2.left || 
+                     rect1.left > rect2.right || 
+                     rect1.bottom < rect2.top || 
+                     rect1.top > rect2.bottom);
+        }
 
-   // global variables here
-   let myGlobalX = 0
-   let myClock
-   let myTimer01
-   let myTimer02
-   let myHorizontalSpeed = 10
-   let myVeritcalSpeed  = 6
-   
-   // global functions here
-function myHitOther(my1,my2){
-   left1   = parseInt(document.getElementById(my1).style.left)
-   right1  = left1 + parseInt(document.getElementById(my1).style.width)
-   top1    = parseInt(document.getElementById(my1).style.top)   
-   bottom1 = top1   + parseInt(document.getElementById(my1).style.height)
-   left2   = parseInt(document.getElementById(my2).style.left)
-   right2  = left2 + parseInt(document.getElementById(my2).style.width)
-   top2    = parseInt(document.getElementById(my2).style.top)   
-   bottom2 = top2   + parseInt(document.getElementById(my2).style.height)
-   if ((right1  >=  left2  ) &&      	   
-       (bottom1 >=  top2   ) &&
-       (left1   <=  right2 ) &&
-       (top1    <=  bottom2) ){
-       return true
-   }
-}
+        // Function to check for collisions and boundaries
+        function myCheckHit() {
+            // Checking win condition
+            if (myHitOther('myImg01', 'myImg02')) {
+                alert('You Win, now go to the next level');
+                document.getElementById('myImg01').style.left = '20px';
+                window.location = 'https://www.google.ca'; // Redirecting to Google
+            }
 
+            // Checking for window boundaries
+            const img01 = document.getElementById('myImg01');
+            const img01Left = parseInt(img01.style.left);
+            const img01Top = parseInt(img01.style.top);
 
-function myCheckHit(){
+            // Bounce off the left and right window edges
+            if (img01Left > window.innerWidth - img01.width || img01Left < 0) {
+                myHorizontalSpeed *= -1; // Reverse direction
+            }
 
-   
+            // Bounce off the top and bottom window edges
+            if (img01Top > window.innerHeight - img01.height || img01Top < 0) {
+                myVerticalSpeed *= -1; // Reverse direction
+            }
+        }
 
-   // YOU WIN and go to next level!
-   if ( myHitOther('myImg01','myImg02') ){
-       alert('You Win, now go to the next level')
-      document.getElementById('myImg01').style.left = '20px'
-      location = 'https://www.google.ca'
-   }
+        // Function to move the image to the right
+        function moveRight() {
+            if (isMovingRight) {
+                const img01 = document.getElementById('myImg01');
+                img01.style.left = parseInt(img01.style.left) + myHorizontalSpeed + 'px';
+                myCheckHit();
+                requestAnimationFrame(moveRight);
+            }
+        }
 
-   // more if statements here
+        // Function to move the image down
+        function moveDown() {
+            if (isMovingDown) {
+                const img01 = document.getElementById('myImg01');
+                img01.style.top = parseInt(img01.style.top) + myVerticalSpeed + 'px';
+                myCheckHit();
+                requestAnimationFrame(moveDown);
+            }
+        }
 
+        // Event listeners for movement buttons
+        const moveRightButton = document.getElementById('moveRightButton');
+        moveRightButton.addEventListener('mousedown', function () {
+            isMovingRight = true;
+            moveRight();
+        });
+        moveRightButton.addEventListener('mouseup', function () {
+            isMovingRight = false;
+        });
 
-   // checking for window boundaries
-   // far left bounce
-  if( parseInt(document.getElementById('myImg01').style.left) > window.innerWidth - document.getElementById('myImg01').width ){
-      myHorizontalSpeed *= -1
-   }
-  
-  // far right bounce
-  if( parseInt(document.getElementById('myImg01').style.left) < -10  ){
-      myHorizontalSpeed = myHorizontalSpeed * -1
-   }
+        const moveDownButton = document.getElementById('moveDownButton');
+        moveDownButton.addEventListener('mousedown', function () {
+            isMovingDown = true;
+            moveDown();
+        });
+        moveDownButton.addEventListener('mouseup', function () {
+            isMovingDown = false;
+        });
 
-
-
-}
-
-
-</script>
-
-
-
-
-<input type=button value="Auto Background Left" onclick="{
-  clearInterval(myClock)
-  let myTemp = '100px 0px'
-  myClock = setInterval(function(){
-      myGlobalX -= 5
-      myTemp =  myGlobalX + 'px 0px'
-      document.getElementById('myBody').style.backgroundPosition = myTemp
-  }, 100)
-    
-}">
-
-
-
-
-
-<input type=button value="Auto Right" onTouchStart="{this.click(); event.preventDefault();}" onclick="{
-
-  clearInterval(myTimer01)
-  clearInterval(myTimer02)
-  myTimer01 = setInterval(function(){
-     document.getElementById('myImg01').style.left = parseInt(document.getElementById('myImg01').style.left) + myHorizontalSpeed + 'px'
-     myCheckHit()     // checks for all collisions
-  }, 50)
-
-
-}"><br><br>
-  
-  
-<input type=button value="Auto Down" onTouchStart="{this.click(); event.preventDefault();}" onclick="{
-
-  clearInterval(myTimer01)
-  clearInterval(myTimer02)
-  myTimer02 = setInterval(function(){
-     document.getElementById('myImg01').style.top = parseInt(document.getElementById('myImg01').style.top) + myVeritcalSpeed + 'px'
-     myCheckHit()     // checks for all collisions
-  }, 50)
-
-
-}"><br><br>
-
-
-<img id="myImg01" src="myImgNew.jpg" title="myImg01" style="position:absolute; width:100px; height:80px; left: 50px; top:190px;">
-<img id="myImg02" src="myImgNew.jpg" title="myImg02" style="position:absolute; width:100px;  height:80px; left:350px; top:390px;">
-
-
+        // Function to move background to the left
+        function moveBackgroundLeft() {
+            clearInterval(myClock);
+            myGlobalX = parseInt(getComputedStyle(document.body).backgroundPositionX) || 0;
+            myClock = setInterval(function () {
+                myGlobalX -= 5;
+                document.body.style.backgroundPosition = myGlobalX + 'px 0px';
+            }, 100);
+        }
+    </script>
+</body>
+</html>
